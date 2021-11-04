@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage/
+.clinic/
+.vscode/snipsnap.code-snippets
+*.log
+temp
+.env
+.tsbuildinfo
+results.csv

@@ -1,0 +1,43 @@
+{
+  "name": "reporting",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon -e ts -x 'yarn ts-node-esm src/index.ts'",
+    "build": "tsc",
+    "start": "node .",
+    "prepare": "husky install",
+    "ts-node-esm": "node --loader ts-node/esm --experimental-specifier-resolution=node"
+  },
+  "dependencies": {
+    "csv-stringify": "5.6.5",
+    "dotenv": "motdotla/dotenv#2e7760e4d1ede7ee02da0954cb98bd76f2fff4d9",
+    "node-fetch": "3.0.0"
+  },
+  "devDependencies": {
+    "@typeofweb/eslint-plugin": "0.2.2",
+    "@types/node": "16.11.6",
+    "eslint": "7",
+    "husky": "7.0.4",
+    "lint-staged": "11.2.6",
+    "nodemon": "2.0.14",
+    "prettier": "2.4.1",
+    "ts-node": "10.4.0",
+    "typescript": "4.6.0-dev.20211104"
+  },
+  "engines": {
+    "node": ">=16 <17",
+    "yarn": "1.x"
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "yarn eslint --fix",
+      "yarn prettier --write"
+    ],
+    "**/*.{md,js,json}": [
+      "yarn prettier --write"
+    ]
+  }
+}

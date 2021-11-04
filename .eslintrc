@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "parserOptions": {
+    "project": "tsconfig.json"
+  },
+  "extends": ["plugin:@typeofweb/recommended"],
+  "rules": {
+    "@typescript-eslint/no-unsafe-call": 0,
+    "@typescript-eslint/no-unsafe-member-access": 0,
+    "@typescript-eslint/restrict-template-expressions": 0,
+    "import/dynamic-import-chunkname": 0
+  }
+}
