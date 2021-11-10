@@ -4,21 +4,17 @@ import Stringify from 'csv-stringify';
 import Fetch from 'node-fetch';
 
 import { QUESTIONS, IGNORED_QUESTIONS } from './slack.types.js';
-import { DAY_OFF, getIsoDate, invariant, isDayOff, isWeekend, ONE_DAY_MS, WEEKEND } from './utils.js';
+import { HOLIDAY, getIsoDate, invariant, isHoliday, isWeekend, ONE_DAY_MS, WEEKEND } from './utils.js';
 
 import type { Match, SlackSearchResponse, Attachment } from './slack.types.js';
 
-async function getAllStandups(page = 1): Promise<readonly Match[]> {
-  const res = await Fetch(
-    `https://slack.com/api/search.messages?query=%22*${encodeURIComponent(
-      process.env['USER_NAME'] ?? '',
-    )}*%20posted%20an%20update%22%20in%3A%3C%23C01NNC5MNF2%7Ccarriers-team-daily-standup%3E&pretty=1`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env['SLACK_USER_TOKEN']}`,
-      },
+async function getAllStandups(message: string, page = 1): Promise<readonly Match[]> {
+  const res = await Fetch(`https://slack.com/api/search.messages?query=${encodeURIComponent(message)}&pretty=1`, {
+    headers: {
+      Authorization: `Bearer ${process.env['SLACK_USER_TOKEN']}`,
     },
-  );
+  });
+
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- response type
   const json = (await res.json()) as SlackSearchResponse;
   if (!json.ok) {
@@ -27,14 +23,24 @@ async function getAllStandups(page = 1): Promise<readonly Match[]> {
   }
 
   if (page < json.messages.paging.pages) {
-    return [...json.messages.matches, ...(await getAllStandups(page + 1))];
+    return [...json.messages.matches, ...(await getAllStandups(message, page + 1))];
   } else {
     return json.messages.matches;
   }
 }
 
 async function getAllStandupsAndMap() {
-  const matches = await getAllStandups();
+  const name = process.env['USER_NAME'];
+  const channelId = process.env['SLACK_CHANNEL_ID'];
+  const channelName = process.env['SLACK_CHANNEL_NAME'];
+
+  invariant(name, `Missing USER_NAME!`);
+  invariant(channelId, `Missing SLACK_CHANNEL_ID!`);
+  invariant(channelName, `Missing SLACK_CHANNEL_NAME!`);
+
+  const message = `"*${name}* posted an update" in:<#${channelId}|${channelName}>`;
+
+  const matches = await getAllStandups(message);
   return matches
     .map((m) => {
       return {
@@ -48,8 +54,8 @@ async function getAllStandupsAndMap() {
 
 type Row = readonly [
   date: Date,
-  didPreviously: typeof WEEKEND | typeof DAY_OFF | string,
-  willDo: typeof WEEKEND | typeof DAY_OFF | string,
+  didPreviously: typeof WEEKEND | typeof HOLIDAY | string,
+  willDo: typeof WEEKEND | typeof HOLIDAY | string,
   hours: 8 | 0,
 ];
 
@@ -69,8 +75,8 @@ export async function run() {
     if (isWeekend(currentDate)) {
       return [currentDate, WEEKEND, WEEKEND, 0];
     }
-    if (isDayOff(currentDate)) {
-      return [currentDate, DAY_OFF, DAY_OFF, 0];
+    if (isHoliday(currentDate)) {
+      return [currentDate, HOLIDAY, HOLIDAY, 0];
     }
 
     const standup = standups.find((s) => getIsoDate(s.postedAt) === getIsoDate(currentDate));
