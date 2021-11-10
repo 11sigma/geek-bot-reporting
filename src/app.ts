@@ -1,4 +1,5 @@
 import Fsp from 'node:fs/promises';
+import Process from 'node:process';
 
 import Stringify from 'csv-stringify';
 import Fetch from 'node-fetch';
@@ -11,7 +12,7 @@ import type { Match, SlackSearchResponse, Attachment } from './slack.types.js';
 async function getAllStandups(message: string, page = 1): Promise<readonly Match[]> {
   const res = await Fetch(`https://slack.com/api/search.messages?query=${encodeURIComponent(message)}&pretty=1`, {
     headers: {
-      Authorization: `Bearer ${process.env['SLACK_USER_TOKEN']}`,
+      Authorization: `Bearer ${Process.env['SLACK_USER_TOKEN']}`,
     },
   });
 
@@ -30,9 +31,9 @@ async function getAllStandups(message: string, page = 1): Promise<readonly Match
 }
 
 async function getAllStandupsAndMap() {
-  const name = process.env['USER_NAME'];
-  const channelId = process.env['SLACK_CHANNEL_ID'];
-  const channelName = process.env['SLACK_CHANNEL_NAME'];
+  const name = Process.env['USER_NAME'];
+  const channelId = Process.env['SLACK_CHANNEL_ID'];
+  const channelName = Process.env['SLACK_CHANNEL_NAME'];
 
   invariant(name, `Missing USER_NAME!`);
   invariant(channelId, `Missing SLACK_CHANNEL_ID!`);

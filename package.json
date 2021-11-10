@@ -5,13 +5,14 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -e ts -x 'yarn ts-node-esm src/index.ts'",
     "build": "tsc",
-    "start": "node .",
+    "run": "node .",
+    "dev": "nodemon -e ts -x 'yarn ts-node-esm src/index.ts'",
     "prepare": "husky install",
     "ts-node-esm": "node --loader ts-node/esm --experimental-specifier-resolution=node"
   },
   "dependencies": {
+    "clipboardy": "3.0.0",
     "csv-stringify": "5.6.5",
     "dotenv": "motdotla/dotenv#2e7760e4d1ede7ee02da0954cb98bd76f2fff4d9",
     "node-fetch": "3.1.0"
