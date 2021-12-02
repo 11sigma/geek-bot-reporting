@@ -19,12 +19,18 @@ export function streamToString(stream: Readable) {
 export const getIsoDate = (d: Date) => d.toISOString().slice(0, `XXXX-XX-XX`.length);
 export const isWeekend = (d: Date) => [SATURDAY, SUNDAY].includes(d.getDay());
 export const isHoliday = (d: Date) => POLISH_HOLIDAYS_2021.some((holiday) => getIsoDate(holiday) === getIsoDate(d));
+export const isDayOff = (d: Date) => DAYS_OFF.some((holiday) => getIsoDate(holiday) === getIsoDate(d));
 
 export const WEEKEND = 'WEEKEND' as const;
 export const HOLIDAY = 'HOLIDAY' as const;
+export const DAY_OFF = 'DAY_OFF' as const;
+export const EMPTY = 'EMPTY' as const;
 export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 export const SATURDAY = 6;
 export const SUNDAY = 0;
+
+export const DAYS_OFF = ['2021-11-19'].map((d) => new Date(d + 'T00:00:00.000Z'));
+
 export const POLISH_HOLIDAYS_2021 = [
   '2021-01-01', // New Year's Day
   '2021-01-06', // Epiphany
